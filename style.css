@@ -619,9 +619,9 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
   .page{ padding:44px 20px 40px; }
   /* relative so avatar can be pinned top-right */
   .masthead{ position:relative; gap:0; align-items:flex-start; }
-  /* compact subpage header: name left, nav right, single row */
-  .masthead--compact{ flex-wrap:wrap; gap:12px; align-items:center; }
-  .masthead--compact .sitenav{ flex-shrink:1; }
+  /* compact subpage header: stack name above nav on phones */
+  .masthead--compact{ flex-direction:column; gap:10px; align-items:flex-start; }
+  .masthead--compact .sitenav{ width:100%; }
   /* pin avatar top-right, out of flow */
   .avatar-wrap{ position:absolute; top:0; right:0; width:90px; height:90px; }
   .avatar{ width:90px; height:90px; border-radius:12px; }
