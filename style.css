@@ -620,18 +620,17 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
   .masthead--compact .sitenav{ flex-shrink:1; }
 }
 
-/* phone — keep side-by-side, shrink avatar, wrap tabs */
+/* phone — stack avatar below content so name + nav get full width */
 @media (max-width:580px){
   .page{ padding:24px 20px 40px; }
-  .masthead{ gap:16px; align-items:flex-start; }
-  .avatar-wrap{ width:100px; height:100px; }
-  .avatar{ width:100px; height:100px; border-radius:12px; }
+  .masthead{ flex-direction:column; gap:20px; align-items:flex-start; }
+  .avatar-wrap{ width:120px; height:120px; align-self:flex-start; }
+  .avatar{ width:120px; height:120px; border-radius:12px; }
   .avatar-wrap::after{ border-radius:14px; }
   .name{ font-size:1.85rem; }
   .name.small{ font-size:1.25rem; }
   .tagline{ font-size:.9rem; margin-top:10px; }
-  /* tabs wrap to 2 rows so all 5 are visible */
-  .tabs{ flex-wrap:wrap; gap:4px; width:auto; }
+  .tabs{ flex-wrap:nowrap; gap:4px; width:auto; }
   .tabs a{ padding:6px 10px; font-size:.72rem; }
   .detail-title{ font-size:1.45rem; }
   .detail-section p{ text-align:left; }
@@ -644,7 +643,7 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
 @media (max-width:380px){
   .page{ padding:20px 14px 36px; }
   .masthead{ gap:12px; }
-  .avatar-wrap{ width:80px; height:80px; }
+  .avatar-wrap{ width:80px; height:80px; align-self:flex-start; }
   .avatar{ width:80px; height:80px; border-radius:10px; }
   .name{ font-size:1.65rem; }
   .tabs a{ padding:5px 8px; font-size:.68rem; }
