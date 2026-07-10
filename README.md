@@ -1,1 +1,1 @@
-# DUMUduwaka.github.io
+# UsithaUduwaka.github.io
