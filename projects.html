@@ -15,37 +15,73 @@
     <header class="masthead">
       <div class="identity">
         <h1 class="name small"><a href="index.html">Usitha Mihiranga</a></h1>
+        <nav class="sitenav">
+          <div class="tabs">
+            <a href="index.html">home</a>
+            <a href="about.html">about</a>
+            <a href="research.html">research</a>
+            <a href="projects.html" class="active">projects</a>
+            <a href="blog.html">blog</a>
+          </div>
+        </nav>
       </div>
     </header>
 
-    <nav class="tabs">
-      <a href="index.html">about</a>
-      <a href="research.html">research</a>
-      <a href="projects.html" class="active">projects</a>
-    </nav>
-
     <section class="block">
       <p class="section-label">projects</p>
-
       <p class="prose" style="color:#C3C8D6;max-width:60ch;">
-        Side projects, tools, and things you've built outside of formal research.
+        Side projects, tools, and things built outside of formal research.
       </p>
 
-      <div class="entry">
-        <p class="etitle"><a href="#">Project name</a></p>
-        <p class="edesc">A sentence or two about what it is and why it's interesting.</p>
-        <div class="etags">
-          <a href="#">Repo</a>
-          <a href="#">Demo</a>
-        </div>
-      </div>
+      <div class="entries-grid">
 
-      <div class="entry">
-        <p class="etitle"><a href="#">Another project</a></p>
-        <p class="edesc">A sentence or two about what it is and why it's interesting.</p>
-        <div class="etags">
-          <a href="#">Repo</a>
+        <div class="entry">
+          <p class="etitle"><a href="projects/hhg-simulation.html">HHG Simulation</a></p>
+          <p class="emeta">Computational Physics &middot; 2023</p>
+          <p class="edesc">High harmonic generation simulation using time-dependent Schr&ouml;dinger equation and QuSpin for quantum dynamics.</p>
+          <div class="etags">
+            <a href="#">Repo</a>
+            <a href="#">Demo</a>
+          </div>
         </div>
+
+        <div class="entry">
+          <p class="etitle"><a href="#">Microscope Optimization</a></p>
+          <p class="emeta">Biomedical Engineering &middot; 2024</p>
+          <p class="edesc">Auto-illumination and smart control system for optimizing fluorescence microscopy acquisition parameters in real time.</p>
+          <div class="etags">
+            <a href="#">Repo</a>
+          </div>
+        </div>
+
+        <div class="entry">
+          <p class="etitle"><a href="#">MRI AD Classification</a></p>
+          <p class="emeta">AI / ML &middot; 2024</p>
+          <p class="edesc">Convolutional neural network for Alzheimer's disease classification from structural MRI, trained on the ADNI dataset.</p>
+          <div class="etags">
+            <a href="#">Repo</a>
+            <a href="#">Report</a>
+          </div>
+        </div>
+
+        <div class="entry">
+          <p class="etitle"><a href="#">DSI Studio Tractography Automation</a></p>
+          <p class="emeta">Neuroimaging &middot; 2024</p>
+          <p class="edesc">Scripted pipeline automating DSI Studio tractography workflows for large-scale diffusion MRI datasets.</p>
+          <div class="etags">
+            <a href="#">Repo</a>
+          </div>
+        </div>
+
+        <div class="entry">
+          <p class="etitle"><a href="#">RoboDK Motion Speed Analysis</a></p>
+          <p class="emeta">Robotics &middot; 2023</p>
+          <p class="edesc">Automated motion speed analysis and path optimization for robotic arms using RoboDK's Python API.</p>
+          <div class="etags">
+            <a href="#">Repo</a>
+          </div>
+        </div>
+
       </div>
     </section>
 

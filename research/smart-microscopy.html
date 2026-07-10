@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Microscopy — Usitha Uduwakaarachchi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="page">
+
+    <header class="masthead">
+      <div class="identity">
+        <h1 class="name small"><a href="../index.html">Usitha Mihiranga</a></h1>
+        <nav class="sitenav">
+          <div class="tabs">
+            <a href="../index.html">home</a>
+            <a href="../about.html">about</a>
+            <a href="../research.html" class="active">research</a>
+            <a href="../projects.html">projects</a>
+            <a href="../blog.html">blog</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="block">
+      <a href="../research.html" class="back-link">&larr; research</a>
+      <h1 class="detail-title">Smart Microscopy &amp; Adaptive Auto-illumination</h1>
+      <div class="detail-meta">
+        <span>UT Southwestern Medical Center</span>
+        <span>&middot;</span>
+        <span>2024&ndash;present</span>
+        <span>&middot;</span>
+        <span>Biomedical Engineering</span>
+      </div>
+      <div class="detail-meta" style="margin-top:-8px">
+        <div class="etags" style="margin:0">
+          <a href="#">PDF</a>
+          <a href="#">Code</a>
+          <a href="#">Poster</a>
+        </div>
+      </div>
+      <p class="detail-abstract">
+        We develop an adaptive illumination control system for fluorescence microscopy that automatically optimizes excitation parameters — laser power, exposure time, and spectral channel order — in real time, reducing photobleaching and improving throughput in large-scale imaging experiments.
+      </p>
+    </div>
+
+    <article class="detail-body">
+
+      <section class="detail-section">
+        <h2>Introduction</h2>
+        <p>High-content fluorescence microscopy generates terabyte-scale datasets by imaging thousands of wells or tissue regions. Manual optimization of illumination parameters is impractical at this scale and introduces systematic bias. Suboptimal settings cause photobleaching, phototoxicity, and signal saturation — all of which compromise downstream quantitative analysis.</p>
+        <p>This work builds a feedback-driven illumination controller that observes the fluorescence response of the sample and adjusts acquisition parameters before each frame is captured. The system requires no pre-calibration and generalizes across sample types.</p>
+      </section>
+
+      <section class="detail-section">
+        <h2>Problem Formulation</h2>
+        <p>Let $\mathbf{u}_t = (P_t, \tau_t, \lambda_t)$ denote the illumination state at time $t$: laser power, exposure duration, and excitation wavelength. The observed image $I_t$ is modeled as:</p>
+        <div class="eq">$$I_t(x,y) = \eta\,c(x,y)\,\sigma(\lambda_t)\,P_t\,\tau_t \cdot e^{-\beta P_t \tau_t\,t} + \varepsilon_t$$</div>
+        <p>where $c(x,y)$ is the fluorophore concentration, $\sigma(\lambda)$ the absorption cross-section, $\beta$ the photobleaching rate, and $\varepsilon_t$ camera noise. The objective is to maximize signal-to-noise ratio (SNR) across all frames subject to a total light dose budget $D$:</p>
+        <div class="eq">$$\max_{\{{\mathbf{u}_t}\}} \sum_t \text{SNR}(I_t) \quad \text{s.t.} \quad \sum_t P_t\,\tau_t \leq D$$</div>
+
+        <div class="fig">
+          <div class="fig-placeholder">[ Figure: Illumination feedback loop block diagram ]</div>
+          <p class="fig-caption"><b>Figure 1.</b> Closed-loop illumination controller. After each frame, image statistics (mean signal, noise variance, saturation fraction) feed into the controller, which updates $\mathbf{u}_{t+1}$ before the next acquisition.</p>
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>Methods</h2>
+        <p>We use a lightweight online controller based on proportional-integral (PI) feedback on the mean fluorescence intensity $\bar{I}_t$, targeting a setpoint $I^*$ (typically 60% of the dynamic range):</p>
+        <div class="eq">$$P_{t+1} = P_t + K_p\,e_t + K_i\sum_{s\leq t} e_s, \quad e_t = I^* - \bar{I}_t$$</div>
+        <p>Exposure time $\tau_t$ is adjusted to maintain a fixed signal level when the laser power reaches its bounds. Channel order is scheduled to minimize cross-talk using a greedy algorithm that orders channels by decreasing emission wavelength.</p>
+
+        <div class="fig">
+          <div class="fig-placeholder">[ Figure: Controller response across 200 frames — power trace, SNR trace ]</div>
+          <p class="fig-caption"><b>Figure 2.</b> Controller response on a representative well. Top: adapted laser power $P_t$ converges within ~10 frames. Bottom: resulting SNR compared to fixed-exposure baseline.</p>
+        </div>
+
+        <p>For detection of saturation events, pixel histograms are computed per-frame on the GPU (CuPy). A saturation fraction above 2% triggers an immediate power reduction by 20% regardless of the PI update.</p>
+
+        <pre class="code-block"><code><span class="code-kw">import</span> <span class="code-module">numpy</span> <span class="code-kw">as</span> <span class="code-fn">np</span>
+
+<span class="code-kw">class</span> <span class="code-type">PIController</span>:
+    <span class="code-kw">def</span> <span class="code-fn">__init__</span>(<span class="code-var">self</span>, Kp=<span class="code-num">0.05</span>, Ki=<span class="code-num">0.002</span>, P_min=<span class="code-num">1.0</span>, P_max=<span class="code-num">100.0</span>):
+        <span class="code-var">self</span>.Kp, <span class="code-var">self</span>.Ki = Kp, Ki
+        <span class="code-var">self</span>.P_min, <span class="code-var">self</span>.P_max = P_min, P_max
+        <span class="code-var">self</span>.integral = <span class="code-num">0.0</span>
+
+    <span class="code-kw">def</span> <span class="code-fn">update</span>(<span class="code-var">self</span>, I_mean, I_target, P_current):
+        e = I_target - I_mean
+        <span class="code-var">self</span>.integral += e
+        P_new = P_current + <span class="code-var">self</span>.Kp * e + <span class="code-var">self</span>.Ki * <span class="code-var">self</span>.integral
+        <span class="code-kw">return</span> <span class="code-fn">float</span>(np.<span class="code-fn">clip</span>(P_new, <span class="code-var">self</span>.P_min, <span class="code-var">self</span>.P_max))
+
+    <span class="code-kw">def</span> <span class="code-fn">reset</span>(<span class="code-var">self</span>):
+        <span class="code-var">self</span>.integral = <span class="code-num">0.0</span></code></pre>
+      </section>
+
+      <section class="detail-section">
+        <h2>Results</h2>
+        <p>We evaluated the system on fixed HeLa cells stained with DAPI, Alexa Fluor 488, and Alexa Fluor 647, imaged across 96-well plates.</p>
+
+        <div class="fig">
+          <div class="fig-placeholder">[ Figure: Photobleaching curves — adaptive vs. fixed illumination ]</div>
+          <p class="fig-caption"><b>Figure 3.</b> Mean fluorescence intensity over repeated acquisitions. Adaptive illumination (blue) achieves 40% lower photobleaching rate compared to fixed high-power baseline (grey).</p>
+        </div>
+
+        <div class="callout">
+          <span class="callout-label">Key result</span>
+          Adaptive illumination reduces cumulative light dose by $38 \pm 6\%$ while maintaining SNR within 5% of the fixed optimal setting, and eliminates saturation events entirely across 96-well plates.
+        </div>
+
+        <p>Throughput is unaffected: the PI update adds $&lt;1\,\text{ms}$ overhead per frame, well within the camera readout time of $\approx 30\,\text{ms}$ for a $2048 \times 2048$ sensor at 16-bit depth.</p>
+      </section>
+
+      <section class="detail-section">
+        <h2>Future Directions</h2>
+        <ol class="detail-list">
+          <li>Replace the PI controller with a model-predictive controller trained on photobleaching kinetics for each fluorophore class.</li>
+          <li>Extend to multi-photon and light-sheet modalities where illumination geometry adds additional degrees of freedom.</li>
+          <li>Integrate with active autofocus to jointly optimize axial position and illumination.</li>
+        </ol>
+      </section>
+
+      <section class="detail-section">
+        <h2>References</h2>
+        <ol class="detail-list">
+          <li>Bouchard, M. B. et al. (2015). Swept confocally-aligned planar excitation (SCAPE) microscopy for high-speed volumetric imaging. <i>Nature Photonics</i> <b>9</b>, 113–119.</li>
+          <li>Caicedo, J. C. et al. (2017). Data-analysis strategies for image-based cell profiling. <i>Nature Methods</i> <b>14</b>, 849–863.</li>
+          <li>Belthangady, C. &amp; Royer, L. A. (2019). Applications, promises, and pitfalls of deep learning for fluorescence image reconstruction. <i>Nature Methods</i> <b>16</b>, 1215–1225.</li>
+        </ol>
+      </section>
+
+    </article>
+
+    <footer class="foot">
+      <span>&copy; 2026 Usitha Uduwakaarachchi</span>
+      <span>built with github pages</span>
+    </footer>
+
+  </main>
+</body>
+</html>

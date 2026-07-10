@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes on HHG — Usitha Uduwakaarachchi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="page">
+
+    <header class="masthead">
+      <div class="identity">
+        <h1 class="name small"><a href="../index.html">Usitha Mihiranga</a></h1>
+        <nav class="sitenav">
+          <div class="tabs">
+            <a href="../index.html">home</a>
+            <a href="../about.html">about</a>
+            <a href="../research.html">research</a>
+            <a href="../projects.html">projects</a>
+            <a href="../blog.html" class="active">blog</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="block">
+      <a href="../blog.html" class="back-link">&larr; blog</a>
+      <h1 class="detail-title">Notes on High Harmonic Generation</h1>
+      <div class="detail-meta">
+        <span>Physics Notes</span>
+        <span>&middot;</span>
+        <span>June 2023</span>
+        <span>&middot;</span>
+        <span>12 min read</span>
+      </div>
+      <p class="detail-abstract">
+        Personal notes from working through the theory of HHG while building the simulation. Covers the three-step model, the TDSE setup, and some intuition I found helpful that most textbooks skip.
+      </p>
+    </div>
+
+    <article class="detail-body">
+
+      <section class="detail-section">
+        <h2>Why HHG is surprising</h2>
+        <p>The first time I saw an HHG spectrum I found it genuinely strange: you drive a single atom with 800 nm light and it emits 25th, 27th, 29th harmonics — coherent XUV radiation from a single electron. Classical electrodynamics says a free electron in a laser field emits only at the driving frequency (Thomson scattering). So something fundamentally quantum must be happening.</p>
+        <p>The key is the interplay between the bound state, the continuum, and the laser. The electron doesn't just oscillate — it actually leaves the atom, propagates classically for half a cycle, and then comes back. The recollision energy converts to photon energy. That's the semiclassical picture, and it's remarkably accurate.</p>
+      </section>
+
+      <section class="detail-section">
+        <h2>The three-step model (quick derivation)</h2>
+        <p>Assume the electron starts at rest at $x = 0$ at time $t_0$ (birth time). In the laser field $E(t) = E_0 \cos(\omega t)$, Newton's law gives:</p>
+        <div class="eq">$$\ddot{x} = -E_0\cos(\omega t)$$</div>
+        <p>Integrating twice with $\dot{x}(t_0) = 0$:</p>
+        <div class="eq">$$\dot{x}(t) = -\frac{E_0}{\omega}\bigl[\sin(\omega t) - \sin(\omega t_0)\bigr]$$</div>
+        <div class="eq">$$x(t) = \frac{E_0}{\omega^2}\bigl[\cos(\omega t) - \cos(\omega t_0)\bigr] + \frac{E_0}{\omega}\sin(\omega t_0)\,(t - t_0)$$</div>
+        <p>The return time $t_r$ is found by solving $x(t_r) = 0$. At return, the kinetic energy is:</p>
+        <div class="eq">$$E_k(t_r) = \frac{1}{2}\dot{x}(t_r)^2$$</div>
+        <p>Maximizing over all birth times $t_0$, the maximum kinetic energy at return is $3.17\,U_p$, so the emitted photon energy is at most:</p>
+        <div class="eq">$$\hbar\omega_{\max} = I_p + 3.17\,U_p$$</div>
+        <p>This is the <i>cutoff law</i> — one of those rare analytic results in strong-field physics that just works.</p>
+
+        <div class="callout">
+          <span class="callout-label">Intuition check</span>
+          The $3.17\,U_p$ factor comes purely from classical mechanics — no quantum input. The quantum part (tunneling, recombination matrix element) determines the harmonic yield and phase, but not the cutoff position. I found this separation of classical and quantum surprisingly clean.
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>Setting up the TDSE numerically</h2>
+        <p>For the 1D simulation I needed three things: a grid, a potential, and a propagator.</p>
+
+        <p><b>Grid:</b> $N = 1024$ points, $x \in [-100, 100]$ a.u. That's large enough that the wavepacket doesn't hit the edges mid-simulation. Atomic units simplify everything — $\hbar = m_e = e = a_0 = 1$.</p>
+
+        <p><b>Potential:</b> The real hydrogen potential $V = -1/|x|$ is singular at $x=0$. The standard fix is the soft-core:</p>
+        <div class="eq">$$V(x) = -\frac{1}{\sqrt{x^2 + 1}}$$</div>
+        <p>With $a = 1$, the ground state energy comes out to $E_0 \approx -0.67$ a.u., which gives $I_p \approx 0.67$ a.u. — close enough to hydrogen for our purposes.</p>
+
+        <p><b>Propagator:</b> At each timestep I need to apply $e^{-i\hat{H}\Delta t}$ to the wavefunction without forming the full matrix exponential (which is $N \times N$ and expensive). The trick is the Krylov-subspace method:</p>
+        <div class="eq">$$e^{-i\hat{H}\Delta t}|\psi\rangle \approx \sum_{k=0}^{m} c_k\,\hat{H}^k|\psi\rangle$$</div>
+        <p>where $m \ll N$ (I used $m = 20$). This is essentially what <code>scipy.sparse.linalg.expm_multiply</code> does under the hood.</p>
+
+        <pre class="code-block"><code><span class="code-comment"># The one-liner that does all the heavy lifting</span>
+<span class="code-kw">from</span> <span class="code-module">scipy.sparse.linalg</span> <span class="code-kw">import</span> <span class="code-fn">expm_multiply</span>
+
+psi_next = <span class="code-fn">expm_multiply</span>(<span class="code-num">-1</span>j * H_sparse * dt, psi)</code></pre>
+
+        <p>I initially tried a split-operator method (alternating $e^{-i T \Delta t/2}$ and $e^{-i V \Delta t}$ in Fourier space) but the time-dependent laser term couples position and momentum, which makes the factorization approximate. The Krylov method handles the full Hamiltonian directly.</p>
+      </section>
+
+      <section class="detail-section">
+        <h2>Absorbing boundaries</h2>
+        <p>Without absorbing boundaries the ionized wavepacket hits the grid edges and reflects back — completely unphysical. The fix is a complex absorbing potential (CAP) added at the edges:</p>
+        <div class="eq">$$W(x) = -i\,\eta \cdot \max(|x| - x_0, 0)^2$$</div>
+        <p>where $x_0 = 80$ a.u. and $\eta = 10^{-3}$ a.u. The imaginary part causes probability density to decay rather than reflect. Getting $\eta$ right matters: too large and you absorb the physical wavepacket, too small and the CAP doesn't work fast enough.</p>
+
+        <div class="fig">
+          <div class="fig-placeholder">[ Figure: wavefunction snapshots with and without CAP ]</div>
+          <p class="fig-caption"><b>Figure 1.</b> Probability density $|\psi(x,t)|^2$ with (left) and without (right) CAP at the end of the pulse. Without CAP, reflected wavepackets contaminate the dipole signal and corrupt the HHG spectrum.</p>
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>Extracting the spectrum</h2>
+        <p>The HHG spectrum comes from the Fourier transform of the dipole acceleration, not the dipole moment. The acceleration form suppresses the low-frequency contribution from the bound state and gives a cleaner plateau:</p>
+        <div class="eq">$$a(t) = \left\langle\psi(t)\left|-\frac{dV}{dx} - E(t)\right|\psi(t)\right\rangle$$</div>
+        <p>I apply a Hann window before the FFT to reduce spectral leakage from the finite pulse duration. The resulting spectrum shows odd harmonics only (even harmonics are suppressed by inversion symmetry of the potential and the monochromatic field).</p>
+
+        <div class="callout">
+          <span class="callout-label">Gotcha</span>
+          I initially forgot to subtract the mean of $a(t)$ before the FFT. This leaves a DC component that shows up as a spurious peak at $\omega = 0$ and bleeds into the low-harmonic region via spectral leakage. Always detrend the signal first.
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>What I'd do differently</h2>
+        <ol class="detail-list">
+          <li>Use a Gaussian basis instead of a real-space grid — much fewer basis functions needed for the same accuracy.</li>
+          <li>Implement the <i>iSURF</i> boundary condition instead of CAP for more accurate ionization yields.</li>
+          <li>Track individual quantum trajectories (short vs. long) to understand attosecond pulse generation — the full quantum picture is richer than the simple spectrum.</li>
+        </ol>
+      </section>
+
+    </article>
+
+    <footer class="foot">
+      <span>&copy; 2026 Usitha Uduwakaarachchi</span>
+      <span>built with github pages</span>
+    </footer>
+
+  </main>
+</body>
+</html>

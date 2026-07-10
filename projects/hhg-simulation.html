@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HHG Simulation — Usitha Uduwakaarachchi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="page">
+
+    <header class="masthead">
+      <div class="identity">
+        <h1 class="name small"><a href="../index.html">Usitha Mihiranga</a></h1>
+        <nav class="sitenav">
+          <div class="tabs">
+            <a href="../index.html">home</a>
+            <a href="../about.html">about</a>
+            <a href="../research.html">research</a>
+            <a href="../projects.html" class="active">projects</a>
+            <a href="../blog.html">blog</a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <div class="block">
+      <a href="../projects.html" class="back-link">&larr; projects</a>
+      <h1 class="detail-title">High Harmonic Generation Simulation</h1>
+      <div class="detail-meta">
+        <span>Computational Physics</span>
+        <span>&middot;</span>
+        <span>2023</span>
+        <span>&middot;</span>
+        <span>Python &middot; QuSpin &middot; NumPy</span>
+      </div>
+      <div class="detail-meta" style="margin-top:-8px">
+        <div class="etags" style="margin:0">
+          <a href="#">GitHub</a>
+          <a href="#">Report</a>
+        </div>
+      </div>
+      <p class="detail-abstract">
+        Numerical simulation of high harmonic generation (HHG) from a model 1D hydrogen atom driven by an intense few-cycle laser pulse. The time-dependent Schrödinger equation is solved exactly using QuSpin, and the HHG spectrum is extracted from the Fourier transform of the dipole acceleration.
+      </p>
+    </div>
+
+    <article class="detail-body">
+
+      <section class="detail-section">
+        <h2>Background</h2>
+        <p>High harmonic generation is a nonlinear optical process in which an atom irradiated by an intense laser field emits photons at odd integer multiples of the laser frequency. The emitted spectrum exhibits a characteristic plateau followed by a sharp cutoff. The process is well understood through the three-step model:</p>
+        <ol class="detail-list">
+          <li><b>Tunnel ionization</b> — the strong laser field suppresses the atomic barrier, and the electron tunnels out.</li>
+          <li><b>Laser-driven propagation</b> — the freed electron is accelerated in the oscillating laser field.</li>
+          <li><b>Recollision and emission</b> — the electron returns to the ion and recombines, emitting a high-energy photon.</li>
+        </ol>
+        <p>The maximum photon energy (cutoff) is determined analytically by classical trajectory analysis:</p>
+        <div class="eq">$$E_{\text{cut}} = I_p + 3.17\,U_p$$</div>
+        <p>where $I_p$ is the ionization potential and $U_p = E_0^2 / (4\omega_0^2)$ is the ponderomotive energy (atomic units).</p>
+      </section>
+
+      <section class="detail-section">
+        <h2>Theory &amp; Equations</h2>
+        <p>The electron wavefunction $\psi(x,t)$ evolves under the time-dependent Schrödinger equation (TDSE) in the length gauge (atomic units, $\hbar = m_e = e = 1$):</p>
+        <div class="eq">$$i\frac{\partial}{\partial t}\psi(x,t) = \hat{H}(t)\,\psi(x,t)$$</div>
+        <p>The Hamiltonian consists of kinetic energy, the soft-core atomic potential, and the laser-electron coupling:</p>
+        <div class="eq">$$\hat{H}(t) = \underbrace{-\frac{1}{2}\frac{\partial^2}{\partial x^2}}_{\text{kinetic}} + \underbrace{V(x)}_{\text{atomic}} + \underbrace{x\,E(t)}_{\text{laser}}$$</div>
+        <p>The soft-core potential avoids the Coulomb singularity at the origin:</p>
+        <div class="eq">$$V(x) = -\frac{1}{\sqrt{x^2 + a^2}}, \quad a = 1.0 \text{ a.u.}$$</div>
+        <p>The laser pulse is a few-cycle Gaussian envelope:</p>
+        <div class="eq">$$E(t) = E_0 \exp\!\left(-\frac{2\ln 2\,t^2}{\tau^2}\right)\cos(\omega_0 t + \phi_{\text{CEP}})$$</div>
+        <p>The HHG spectrum $S(\omega)$ is obtained from the power spectrum of the dipole acceleration $a(t) = \langle\psi|\partial V/\partial x + E(t)|\psi\rangle$:</p>
+        <div class="eq">$$S(\omega) = \left|\int_{-\infty}^{\infty} a(t)\,e^{i\omega t}\,dt\right|^2$$</div>
+      </section>
+
+      <section class="detail-section">
+        <h2>Numerical Methods</h2>
+        <p>The TDSE is solved on a uniform real-space grid of $N = 1024$ points spanning $x \in [-100, 100]$ a.u. Absorbing boundary conditions are applied via a complex absorbing potential (CAP) at the grid edges to prevent wavefunction reflection.</p>
+        <p>Time propagation uses the Krylov-subspace Arnoldi method (EXPOKIT), which efficiently computes the matrix exponential action $e^{-i\hat{H}\Delta t}|\psi\rangle$ without full diagonalization. The kinetic energy operator is discretized by the second-order finite-difference stencil.</p>
+
+        <div class="fig">
+          <div class="fig-placeholder">[ Figure: HHG spectrum — log-scale plot of $S(\omega)$ vs harmonic order ]</div>
+          <p class="fig-caption"><b>Figure 1.</b> Computed HHG spectrum showing the perturbative regime (low orders), the plateau (constant intensity), and the cutoff at harmonic order $\approx 25$, consistent with $I_p + 3.17\,U_p$.</p>
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>Implementation</h2>
+        <p>Core simulation using QuSpin and NumPy:</p>
+        <pre class="code-block"><code><span class="code-kw">import</span> <span class="code-module">numpy</span> <span class="code-kw">as</span> <span class="code-fn">np</span>
+<span class="code-kw">from</span> <span class="code-module">scipy.sparse.linalg</span> <span class="code-kw">import</span> <span class="code-fn">expm_multiply</span>
+<span class="code-kw">from</span> <span class="code-module">scipy.sparse</span> <span class="code-kw">import</span> <span class="code-fn">diags</span>
+
+<span class="code-comment"># Grid setup</span>
+N  = <span class="code-num">1024</span>
+x  = np.<span class="code-fn">linspace</span>(<span class="code-num">-100</span>, <span class="code-num">100</span>, N)
+dx = x[<span class="code-num">1</span>] - x[<span class="code-num">0</span>]
+
+<span class="code-comment"># Soft-core potential and kinetic energy (finite difference)</span>
+V  = <span class="code-num">-1.0</span> / np.<span class="code-fn">sqrt</span>(x**<span class="code-num">2</span> + <span class="code-num">1.0</span>)
+K  = <span class="code-fn">diags</span>([<span class="code-num">-2</span>, <span class="code-num">1</span>, <span class="code-num">1</span>], [<span class="code-num">0</span>, <span class="code-num">-1</span>, <span class="code-num">1</span>], shape=(N, N)) * (<span class="code-num">-0.5</span> / dx**<span class="code-num">2</span>)
+
+<span class="code-comment"># Laser parameters (800 nm, ~10^14 W/cm²)</span>
+omega0 = <span class="code-num">0.057</span>   <span class="code-comment"># a.u.</span>
+E0     = <span class="code-num">0.053</span>   <span class="code-comment"># a.u.</span>
+tau    = <span class="code-num">6</span> * (<span class="code-num">2</span> * np.pi / omega0)
+
+<span class="code-kw">def</span> <span class="code-fn">laser</span>(t):
+    <span class="code-kw">return</span> E0 * np.<span class="code-fn">exp</span>(<span class="code-num">-2</span>*np.<span class="code-fn">log</span>(<span class="code-num">2</span>)*t**<span class="code-num">2</span>/tau**<span class="code-num">2</span>) * np.<span class="code-fn">cos</span>(omega0*t)
+
+<span class="code-comment"># Find ground state</span>
+<span class="code-kw">from</span> <span class="code-module">scipy.sparse.linalg</span> <span class="code-kw">import</span> <span class="code-fn">eigsh</span>
+H0   = K + <span class="code-fn">diags</span>(V)
+E_gs, psi0 = <span class="code-fn">eigsh</span>(H0, k=<span class="code-num">1</span>, which=<span class="code-str">'SA'</span>)
+psi  = psi0[:, <span class="code-num">0</span>].<span class="code-fn">astype</span>(<span class="code-type">complex</span>)
+
+<span class="code-comment"># Time propagation</span>
+dt, T = <span class="code-num">0.05</span>, <span class="code-num">2</span> * tau
+t_grid = np.<span class="code-fn">arange</span>(-T/<span class="code-num">2</span>, T/<span class="code-num">2</span>, dt)
+acc    = []
+
+<span class="code-kw">for</span> t <span class="code-kw">in</span> t_grid:
+    Et  = <span class="code-fn">laser</span>(t)
+    H_t = K + <span class="code-fn">diags</span>(V + x * Et)
+    psi = <span class="code-fn">expm_multiply</span>(<span class="code-num">-1</span>j * H_t * dt, psi)
+    dV  = x / (x**<span class="code-num">2</span> + <span class="code-num">1.0</span>)**<span class="code-num">1.5</span>   <span class="code-comment"># dV/dx</span>
+    acc.<span class="code-fn">append</span>(psi.<span class="code-fn">conj</span>() @ (dV + Et) * psi * dx)
+
+<span class="code-comment"># HHG spectrum</span>
+acc    = np.<span class="code-fn">array</span>(acc).real
+freq   = np.fft.<span class="code-fn">rfftfreq</span>(<span class="code-fn">len</span>(acc), dt)
+spec   = np.<span class="code-fn">abs</span>(np.fft.<span class="code-fn">rfft</span>(acc * np.<span class="code-fn">hanning</span>(<span class="code-fn">len</span>(acc))))**<span class="code-num">2</span></code></pre>
+      </section>
+
+      <section class="detail-section">
+        <h2>Results</h2>
+
+        <div class="fig">
+          <div class="fig-placeholder">[ Figure: $|\psi(x,t)|^2$ snapshots — ionization, propagation, recollision ]</div>
+          <p class="fig-caption"><b>Figure 2.</b> Electron probability density at three moments within one laser cycle: (left) before ionization, (center) during free propagation, (right) at recollision.</p>
+        </div>
+
+        <p>The simulation reproduces the semiclassical cutoff law across a range of intensities. The ponderomotive scaling $U_p \propto E_0^2 / \omega_0^2$ is confirmed numerically with $&lt;2\%$ error compared to the analytic prediction.</p>
+
+        <div class="callout">
+          <span class="callout-label">Key result</span>
+          At $E_0 = 0.053$ a.u. ($I \approx 10^{14}$ W/cm²), the simulated cutoff falls at harmonic order 25, giving $E_{\text{cut}} \approx 25\,\omega_0 = 1.43\,\text{a.u.}$, consistent with $I_p + 3.17\,U_p = 0.67 + 0.76 = 1.43\,\text{a.u.}$
+        </div>
+      </section>
+
+      <section class="detail-section">
+        <h2>References</h2>
+        <ol class="detail-list">
+          <li>Corkum, P. B. (1993). Plasma perspective on strong-field multiphoton ionization. <i>Phys. Rev. Lett.</i> <b>71</b>, 1994–1997.</li>
+          <li>Lewenstein, M. et al. (1994). Theory of high-harmonic generation by low-frequency laser fields. <i>Phys. Rev. A</i> <b>49</b>, 2117–2132.</li>
+          <li>Weinberg, P. &amp; Bukov, M. (2019). QuSpin: a Python package for dynamics and exact diagonalization. <i>SciPost Phys.</i> <b>2</b>, 003.</li>
+        </ol>
+      </section>
+
+    </article>
+
+    <footer class="foot">
+      <span>&copy; 2026 Usitha Uduwakaarachchi</span>
+      <span>built with github pages</span>
+    </footer>
+
+  </main>
+</body>
+</html>

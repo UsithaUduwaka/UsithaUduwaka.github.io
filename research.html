@@ -15,40 +15,87 @@
     <header class="masthead">
       <div class="identity">
         <h1 class="name small"><a href="index.html">Usitha Mihiranga</a></h1>
+        <nav class="sitenav">
+          <div class="tabs">
+            <a href="index.html">home</a>
+            <a href="about.html">about</a>
+            <a href="research.html" class="active">research</a>
+            <a href="projects.html">projects</a>
+            <a href="blog.html">blog</a>
+          </div>
+        </nav>
       </div>
     </header>
 
-    <nav class="tabs">
-      <a href="index.html">about</a>
-      <a href="research.html" class="active">research</a>
-      <a href="projects.html">projects</a>
-    </nav>
-
     <section class="block">
       <p class="section-label">research</p>
-
       <p class="prose" style="color:#C3C8D6;max-width:60ch;">
-        One or two sentences describing your research interests overall.
+        One or two sentences describing your overall research interests and focus.
       </p>
 
-      <!-- Duplicate an .entry block for each paper. -->
-      <div class="entry">
-        <p class="etitle">Title of the paper or project</p>
-        <p class="emeta">Authors · Venue or journal · Year</p>
-        <p class="edesc">One-sentence summary of the contribution.</p>
-        <div class="etags">
-          <a href="#">PDF</a>
-          <a href="#">Code</a>
-          <a href="#">arXiv</a>
+      <div class="subsection">
+        <p class="subsection-label">current &mdash; biomedical engineering</p>
+        <div class="entries-grid">
+          <div class="entry">
+            <p class="etitle"><a href="research/smart-microscopy.html">Smart Microscopy &amp; Auto-illumination</a></p>
+            <p class="emeta">UT Southwestern &middot; 2024&ndash;present</p>
+            <p class="edesc">Developing adaptive illumination control systems for high-throughput microscopy, reducing manual overhead and improving image quality.</p>
+            <div class="etags">
+              <a href="#">PDF</a>
+              <a href="#">Code</a>
+            </div>
+          </div>
+
+          <div class="entry">
+            <p class="etitle">Image Analysis &amp; Automation</p>
+            <p class="emeta">UT Southwestern &middot; 2024&ndash;present</p>
+            <p class="edesc">Building automated pipelines for biomedical image segmentation, registration, and quantitative analysis.</p>
+            <div class="etags">
+              <a href="#">Repo</a>
+            </div>
+          </div>
+
+          <div class="entry">
+            <p class="etitle">AI for Biomedical Imaging</p>
+            <p class="emeta">UT Southwestern &middot; 2024</p>
+            <p class="edesc">Applying deep learning models for classification, reconstruction, and enhancement of biomedical images.</p>
+            <div class="etags">
+              <a href="#">Repo</a>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="entry">
-        <p class="etitle">Another title</p>
-        <p class="emeta">Authors · Venue or journal · Year</p>
-        <p class="edesc">One-sentence summary of the contribution.</p>
-        <div class="etags">
-          <a href="#">PDF</a>
+      <div class="subsection">
+        <p class="subsection-label">previous &mdash; physics</p>
+        <div class="entries-grid">
+          <div class="entry">
+            <p class="etitle">High Harmonic Generation</p>
+            <p class="emeta">Computational Physics &middot; 2023</p>
+            <p class="edesc">Simulated HHG spectra from laser-matter interactions using time-dependent quantum dynamics.</p>
+            <div class="etags">
+              <a href="#">PDF</a>
+              <a href="#">Code</a>
+            </div>
+          </div>
+
+          <div class="entry">
+            <p class="etitle">Quantum Dynamics &amp; QuSpin</p>
+            <p class="emeta">Computational Physics &middot; 2023</p>
+            <p class="edesc">Modeled quantum many-body systems using QuSpin for time evolution and spectral analysis.</p>
+            <div class="etags">
+              <a href="#">Code</a>
+            </div>
+          </div>
+
+          <div class="entry">
+            <p class="etitle">Computational Physics</p>
+            <p class="emeta">Physics &middot; 2022&ndash;2023</p>
+            <p class="edesc">Numerical methods for solving PDEs and ODEs arising in classical and quantum mechanical systems.</p>
+            <div class="etags">
+              <a href="#">Code</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
