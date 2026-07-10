@@ -316,6 +316,16 @@ body::before{
   font-size:.8rem;
 }
 
+/* ---------- compact masthead (subpages) ---------- */
+.masthead--compact{
+  align-items:center;
+  gap:24px;
+}
+.masthead--compact .sitenav{
+  margin:0;
+  flex-shrink:0;
+}
+
 /* ---------- sitenav ---------- */
 .sitenav{
   display:flex;
@@ -602,6 +612,12 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
   .avatar-wrap::after{ border-radius:18px; }
   .name{ font-size:2.2rem; }
   .detail-title{ font-size:1.75rem; }
+}
+
+/* compact masthead wraps on phones */
+@media (max-width:580px){
+  .masthead--compact{ flex-wrap:wrap; gap:12px; }
+  .masthead--compact .sitenav{ flex-shrink:1; }
 }
 
 /* phone — keep side-by-side, shrink avatar, wrap tabs */
