@@ -11,6 +11,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script defer>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll())</script>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -87,10 +89,10 @@
         <div class="eq">$$e^{-i\hat{H}\Delta t}|\psi\rangle \approx \sum_{k=0}^{m} c_k\,\hat{H}^k|\psi\rangle$$</div>
         <p>where $m \ll N$ (I used $m = 20$). This is essentially what <code>scipy.sparse.linalg.expm_multiply</code> does under the hood.</p>
 
-        <pre class="code-block"><code><span class="code-comment"># The one-liner that does all the heavy lifting</span>
-<span class="code-kw">from</span> <span class="code-module">scipy.sparse.linalg</span> <span class="code-kw">import</span> <span class="code-fn">expm_multiply</span>
+        <pre class="code-block"><code class="language-python"># The one-liner that does all the heavy lifting
+from scipy.sparse.linalg import expm_multiply
 
-psi_next = <span class="code-fn">expm_multiply</span>(<span class="code-num">-1</span>j * H_sparse * dt, psi)</code></pre>
+psi_next = expm_multiply(-1j * H_sparse * dt, psi)</code></pre>
 
         <p>I initially tried a split-operator method (alternating $e^{-i T \Delta t/2}$ and $e^{-i V \Delta t}$ in Fourier space) but the time-dependent laser term couples position and momentum, which makes the factorization approximate. The Krylov method handles the full Hamiltonian directly.</p>
       </section>

@@ -11,6 +11,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script defer>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll())</script>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -87,22 +89,22 @@
 
         <p>For detection of saturation events, pixel histograms are computed per-frame on the GPU (CuPy). A saturation fraction above 2% triggers an immediate power reduction by 20% regardless of the PI update.</p>
 
-        <pre class="code-block"><code><span class="code-kw">import</span> <span class="code-module">numpy</span> <span class="code-kw">as</span> <span class="code-fn">np</span>
+        <pre class="code-block"><code class="language-python">import numpy as np
 
-<span class="code-kw">class</span> <span class="code-type">PIController</span>:
-    <span class="code-kw">def</span> <span class="code-fn">__init__</span>(<span class="code-var">self</span>, Kp=<span class="code-num">0.05</span>, Ki=<span class="code-num">0.002</span>, P_min=<span class="code-num">1.0</span>, P_max=<span class="code-num">100.0</span>):
-        <span class="code-var">self</span>.Kp, <span class="code-var">self</span>.Ki = Kp, Ki
-        <span class="code-var">self</span>.P_min, <span class="code-var">self</span>.P_max = P_min, P_max
-        <span class="code-var">self</span>.integral = <span class="code-num">0.0</span>
+class PIController:
+    def __init__(self, Kp=0.05, Ki=0.002, P_min=1.0, P_max=100.0):
+        self.Kp, self.Ki = Kp, Ki
+        self.P_min, self.P_max = P_min, P_max
+        self.integral = 0.0
 
-    <span class="code-kw">def</span> <span class="code-fn">update</span>(<span class="code-var">self</span>, I_mean, I_target, P_current):
+    def update(self, I_mean, I_target, P_current):
         e = I_target - I_mean
-        <span class="code-var">self</span>.integral += e
-        P_new = P_current + <span class="code-var">self</span>.Kp * e + <span class="code-var">self</span>.Ki * <span class="code-var">self</span>.integral
-        <span class="code-kw">return</span> <span class="code-fn">float</span>(np.<span class="code-fn">clip</span>(P_new, <span class="code-var">self</span>.P_min, <span class="code-var">self</span>.P_max))
+        self.integral += e
+        P_new = P_current + self.Kp * e + self.Ki * self.integral
+        return float(np.clip(P_new, self.P_min, self.P_max))
 
-    <span class="code-kw">def</span> <span class="code-fn">reset</span>(<span class="code-var">self</span>):
-        <span class="code-var">self</span>.integral = <span class="code-num">0.0</span></code></pre>
+    def reset(self):
+        self.integral = 0.0</code></pre>
       </section>
 
       <section class="detail-section">

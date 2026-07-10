@@ -11,6 +11,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script defer>document.addEventListener('DOMContentLoaded',()=>hljs.highlightAll())</script>
   <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -95,49 +97,49 @@
       <section class="detail-section">
         <h2>Implementation</h2>
         <p>Core simulation using QuSpin and NumPy:</p>
-        <pre class="code-block"><code><span class="code-kw">import</span> <span class="code-module">numpy</span> <span class="code-kw">as</span> <span class="code-fn">np</span>
-<span class="code-kw">from</span> <span class="code-module">scipy.sparse.linalg</span> <span class="code-kw">import</span> <span class="code-fn">expm_multiply</span>
-<span class="code-kw">from</span> <span class="code-module">scipy.sparse</span> <span class="code-kw">import</span> <span class="code-fn">diags</span>
+        <pre class="code-block"><code class="language-python">import numpy as np
+from scipy.sparse.linalg import expm_multiply
+from scipy.sparse import diags
 
-<span class="code-comment"># Grid setup</span>
-N  = <span class="code-num">1024</span>
-x  = np.<span class="code-fn">linspace</span>(<span class="code-num">-100</span>, <span class="code-num">100</span>, N)
-dx = x[<span class="code-num">1</span>] - x[<span class="code-num">0</span>]
+# Grid setup
+N  = 1024
+x  = np.linspace(-100, 100, N)
+dx = x[1] - x[0]
 
-<span class="code-comment"># Soft-core potential and kinetic energy (finite difference)</span>
-V  = <span class="code-num">-1.0</span> / np.<span class="code-fn">sqrt</span>(x**<span class="code-num">2</span> + <span class="code-num">1.0</span>)
-K  = <span class="code-fn">diags</span>([<span class="code-num">-2</span>, <span class="code-num">1</span>, <span class="code-num">1</span>], [<span class="code-num">0</span>, <span class="code-num">-1</span>, <span class="code-num">1</span>], shape=(N, N)) * (<span class="code-num">-0.5</span> / dx**<span class="code-num">2</span>)
+# Soft-core potential and kinetic energy (finite difference)
+V  = -1.0 / np.sqrt(x**2 + 1.0)
+K  = diags([-2, 1, 1], [0, -1, 1], shape=(N, N)) * (-0.5 / dx**2)
 
-<span class="code-comment"># Laser parameters (800 nm, ~10^14 W/cm²)</span>
-omega0 = <span class="code-num">0.057</span>   <span class="code-comment"># a.u.</span>
-E0     = <span class="code-num">0.053</span>   <span class="code-comment"># a.u.</span>
-tau    = <span class="code-num">6</span> * (<span class="code-num">2</span> * np.pi / omega0)
+# Laser parameters (800 nm, ~10^14 W/cm^2)
+omega0 = 0.057   # a.u.
+E0     = 0.053   # a.u.
+tau    = 6 * (2 * np.pi / omega0)
 
-<span class="code-kw">def</span> <span class="code-fn">laser</span>(t):
-    <span class="code-kw">return</span> E0 * np.<span class="code-fn">exp</span>(<span class="code-num">-2</span>*np.<span class="code-fn">log</span>(<span class="code-num">2</span>)*t**<span class="code-num">2</span>/tau**<span class="code-num">2</span>) * np.<span class="code-fn">cos</span>(omega0*t)
+def laser(t):
+    return E0 * np.exp(-2*np.log(2)*t**2/tau**2) * np.cos(omega0*t)
 
-<span class="code-comment"># Find ground state</span>
-<span class="code-kw">from</span> <span class="code-module">scipy.sparse.linalg</span> <span class="code-kw">import</span> <span class="code-fn">eigsh</span>
-H0   = K + <span class="code-fn">diags</span>(V)
-E_gs, psi0 = <span class="code-fn">eigsh</span>(H0, k=<span class="code-num">1</span>, which=<span class="code-str">'SA'</span>)
-psi  = psi0[:, <span class="code-num">0</span>].<span class="code-fn">astype</span>(<span class="code-type">complex</span>)
+# Find ground state
+from scipy.sparse.linalg import eigsh
+H0   = K + diags(V)
+E_gs, psi0 = eigsh(H0, k=1, which='SA')
+psi  = psi0[:, 0].astype(complex)
 
-<span class="code-comment"># Time propagation</span>
-dt, T = <span class="code-num">0.05</span>, <span class="code-num">2</span> * tau
-t_grid = np.<span class="code-fn">arange</span>(-T/<span class="code-num">2</span>, T/<span class="code-num">2</span>, dt)
+# Time propagation
+dt, T = 0.05, 2 * tau
+t_grid = np.arange(-T/2, T/2, dt)
 acc    = []
 
-<span class="code-kw">for</span> t <span class="code-kw">in</span> t_grid:
-    Et  = <span class="code-fn">laser</span>(t)
-    H_t = K + <span class="code-fn">diags</span>(V + x * Et)
-    psi = <span class="code-fn">expm_multiply</span>(<span class="code-num">-1</span>j * H_t * dt, psi)
-    dV  = x / (x**<span class="code-num">2</span> + <span class="code-num">1.0</span>)**<span class="code-num">1.5</span>   <span class="code-comment"># dV/dx</span>
-    acc.<span class="code-fn">append</span>(psi.<span class="code-fn">conj</span>() @ (dV + Et) * psi * dx)
+for t in t_grid:
+    Et  = laser(t)
+    H_t = K + diags(V + x * Et)
+    psi = expm_multiply(-1j * H_t * dt, psi)
+    dV  = x / (x**2 + 1.0)**1.5   # dV/dx
+    acc.append(psi.conj() @ (dV + Et) * psi * dx)
 
-<span class="code-comment"># HHG spectrum</span>
-acc    = np.<span class="code-fn">array</span>(acc).real
-freq   = np.fft.<span class="code-fn">rfftfreq</span>(<span class="code-fn">len</span>(acc), dt)
-spec   = np.<span class="code-fn">abs</span>(np.fft.<span class="code-fn">rfft</span>(acc * np.<span class="code-fn">hanning</span>(<span class="code-fn">len</span>(acc))))**<span class="code-num">2</span></code></pre>
+# HHG spectrum
+acc    = np.array(acc).real
+freq   = np.fft.rfftfreq(len(acc), dt)
+spec   = np.abs(np.fft.rfft(acc * np.hanning(len(acc))))**2</code></pre>
       </section>
 
       <section class="detail-section">

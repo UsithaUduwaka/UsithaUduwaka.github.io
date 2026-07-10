@@ -528,30 +528,36 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
   text-align:center !important;
 }
 
-/* VS Code Dark+ / One Dark Pro */
+/* ---------- code blocks (highlight.js) ---------- */
 .code-block{
   font-family:var(--mono);
   font-size:.84rem;
-  color:#D4D4D4;
   background:#1E1E1E;
   border-radius:10px;
   padding:24px 28px;
   overflow-x:auto;
   line-height:1.85;
   margin:16px 0;
-  white-space:pre;
   tab-size:4;
 }
-.code-block code{ display:block; }
-.code-comment{ color:#6A9955; font-style:italic; }
-.code-kw     { color:#ca7f0d; }   /* import, from, as, def, class, if, for, return … */
-.code-fn     { color:#DCDCAA; }   /* function / method names, imported names */
-.code-module { color:#56B6C2; }   /* module names after import/from */
-.code-str    { color:#CE9178; }   /* string literals */
-.code-num    { color:#B5CEA8; }   /* numbers */
-.code-type   { color:#4EC9B0; }   /* str, int, bool, float, class names */
-.code-var    { color:#9CDCFE; }   /* self, parameters, variables */
-.code-const  { color:#569CD6; }   /* True, False, None */
+.code-block code.hljs{
+  background:transparent;
+  color:#D4D4D4;
+  padding:0;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:inherit;
+}
+.hljs-keyword         { color:#c084bb; }
+.hljs-built_in        { color:#cc9ddf; }
+.hljs-title.function_ { color:#dcdca9; }
+.hljs-title.class_    { color:#4ec9b0; } 
+.hljs-params          { color:#9cdcfe; }
+.hljs-string          { color:#CE9178; }
+.hljs-number          { color:#B5CEA8; }
+.hljs-comment         { color:#6A9955; }
+.hljs-variable        { color:#9ccce4; }
+.hljs-literal         { color:#569CD6; }
 .callout{
   padding:14px 18px;
   border:1px solid rgba(110,155,255,.28);
@@ -572,14 +578,71 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
   letter-spacing:.07em;
 }
 
-/* ---------- responsive ---------- */
-@media (max-width:600px){
-  .page{ padding:52px 20px 80px; }
-  .masthead{ flex-direction:column-reverse; align-items:flex-start; gap:24px; }
-  .avatar-wrap, .avatar{ width:100px; height:100px; }
-  .name{ font-size:2.3rem; }
-  .tabs{ width:100%; justify-content:space-between; }
-  .tabs a{ padding:8px 12px; }
+/* ========== responsive ========== */
+
+/* wide laptop — trim the very large side padding */
+@media (max-width:1280px){
+  .page{ padding:48px 80px 64px; }
+}
+
+/* laptop / small desktop */
+@media (max-width:1024px){
+  .page{ padding:40px 48px 56px; }
+  .avatar-wrap{ width:220px; height:220px; }
+  .avatar{ width:220px; height:220px; }
+  .name{ font-size:2.6rem; }
+}
+
+/* tablet portrait */
+@media (max-width:768px){
+  .page{ padding:32px 32px 48px; }
+  .masthead{ gap:28px; }
+  .avatar-wrap{ width:180px; height:180px; }
+  .avatar{ width:180px; height:180px; border-radius:16px; }
+  .avatar-wrap::after{ border-radius:18px; }
+  .name{ font-size:2.2rem; }
+  .detail-title{ font-size:1.75rem; }
+}
+
+/* large phone / small tablet */
+@media (max-width:580px){
+  .page{ padding:24px 20px 40px; }
+  .masthead{
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:20px;
+  }
+  .avatar-wrap{
+    order:-1;        /* avatar above name */
+    width:110px;
+    height:110px;
+  }
+  .avatar{ width:110px; height:110px; border-radius:14px; }
+  .avatar-wrap::after{ border-radius:16px; }
+  .identity{ text-align:center; }
+  .eyebrow{ justify-content:center; }
+  .links{ justify-content:center; }
+  .sitenav{ display:flex; justify-content:center; }
+  .tabs{ flex-wrap:wrap; justify-content:center; width:auto; }
+  .tabs a{ padding:7px 11px; font-size:.79rem; }
+  .name{ font-size:1.9rem; }
+  .name.small{ font-size:1.3rem; }
+  .tagline{ font-size:.95rem; }
+  .status{ justify-content:center; }
+  .interest-grid{ justify-content:center; }
+  .detail-title{ font-size:1.45rem; }
+  .detail-section p{ text-align:left; }
+  .detail-list li{ text-align:left; }
+  .code-block{ padding:18px 16px; font-size:.78rem; }
+  .detail-abstract{ padding:14px 16px; }
+}
+
+/* small phones */
+@media (max-width:380px){
+  .page{ padding:20px 16px 36px; }
+  .name{ font-size:1.7rem; }
+  .tabs a{ padding:6px 8px; font-size:.74rem; }
 }
 
 @media (prefers-reduced-motion:reduce){
