@@ -3,41 +3,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Research — Your Name</title>
+  <title>Research &mdash; Usitha Uduwakaarachchi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="wrap">
-    <h1>Your Name</h1>
+  <main class="page">
 
-    <nav>
-      <a href="index.html">About me</a>
-      <a href="research.html" class="active">Research</a>
-      <a href="projects.html">Other projects</a>
+    <header class="masthead">
+      <div class="identity">
+        <h1 class="name small"><a href="index.html">Usitha Uduwakaarachchi</a></h1>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <a href="index.html">about</a>
+      <a href="research.html" class="active">research</a>
+      <a href="projects.html">projects</a>
     </nav>
 
-    <hr>
+    <section class="block">
+      <p class="section-label">research</p>
 
-    <h2>Research</h2>
+      <p class="prose" style="color:#C3C8D6;max-width:60ch;">
+        One or two sentences describing your research interests overall.
+      </p>
 
-    <p>
-      One or two sentences describing your research interests overall.
-    </p>
+      <!-- Duplicate an .entry block for each paper. -->
+      <div class="entry">
+        <p class="etitle">Title of the paper or project</p>
+        <p class="emeta">Authors · Venue or journal · Year</p>
+        <p class="edesc">One-sentence summary of the contribution.</p>
+        <div class="etags">
+          <a href="#">PDF</a>
+          <a href="#">Code</a>
+          <a href="#">arXiv</a>
+        </div>
+      </div>
 
-    <!-- Copy an .entry block for each publication or project. -->
-    <div class="entry">
-      <div class="title">Title of the paper or project</div>
-      <div class="meta">Authors · Venue or journal · Year</div>
-      <p>One sentence on what it's about. <a href="#">[PDF]</a> <a href="#">[Code]</a></p>
-    </div>
+      <div class="entry">
+        <p class="etitle">Another title</p>
+        <p class="emeta">Authors · Venue or journal · Year</p>
+        <p class="edesc">One-sentence summary of the contribution.</p>
+        <div class="etags">
+          <a href="#">PDF</a>
+        </div>
+      </div>
+    </section>
 
-    <div class="entry">
-      <div class="title">Another title</div>
-      <div class="meta">Authors · Venue or journal · Year</div>
-      <p>One sentence on what it's about. <a href="#">[PDF]</a></p>
-    </div>
+    <footer class="foot">
+      <span>&copy; 2026 Usitha Uduwakaarachchi</span>
+      <span>built with github pages</span>
+    </footer>
 
-    <footer>Copyright © 2026 Your Name.</footer>
-  </div>
+  </main>
 </body>
 </html>
