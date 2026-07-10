@@ -59,7 +59,7 @@ body::before{
   z-index:1;
   max-width:var(--max);
   margin:0 auto;
-  padding:48px 160px 64px;
+  padding:68px 160px 64px;
 }
 
 /* entrance */
@@ -592,12 +592,12 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
 
 /* wide laptop — trim the very large side padding */
 @media (max-width:1280px){
-  .page{ padding:48px 80px 64px; }
+  .page{ padding:68px 80px 64px; }
 }
 
 /* laptop / small desktop */
 @media (max-width:1024px){
-  .page{ padding:40px 48px 56px; }
+  .page{ padding:60px 48px 56px; }
   .avatar-wrap{ width:220px; height:220px; }
   .avatar{ width:220px; height:220px; }
   .name{ font-size:2.6rem; }
@@ -605,7 +605,7 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
 
 /* tablet portrait */
 @media (max-width:768px){
-  .page{ padding:32px 32px 48px; }
+  .page{ padding:52px 32px 48px; }
   .masthead{ gap:28px; }
   .avatar-wrap{ width:180px; height:180px; }
   .avatar{ width:180px; height:180px; border-radius:16px; }
@@ -614,21 +614,24 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
   .detail-title{ font-size:1.75rem; }
 }
 
-/* compact masthead wraps on phones */
+/* phone — avatar anchors top-right, tagline + links + nav span full width */
 @media (max-width:580px){
-  .masthead--compact{ flex-wrap:wrap; gap:12px; }
+  .page{ padding:44px 20px 40px; }
+  /* relative so avatar can be pinned top-right */
+  .masthead{ position:relative; gap:0; align-items:flex-start; }
+  /* compact subpage header: name left, nav right, single row */
+  .masthead--compact{ flex-wrap:wrap; gap:12px; align-items:center; }
   .masthead--compact .sitenav{ flex-shrink:1; }
-}
-
-/* phone — stack avatar below content so name + nav get full width */
-@media (max-width:580px){
-  .page{ padding:24px 20px 40px; }
-  .masthead{ flex-direction:column; gap:20px; align-items:flex-start; }
-  .avatar-wrap{ width:120px; height:120px; align-self:flex-start; }
-  .avatar{ width:120px; height:120px; border-radius:12px; }
+  /* pin avatar top-right, out of flow */
+  .avatar-wrap{ position:absolute; top:0; right:0; width:90px; height:90px; }
+  .avatar{ width:90px; height:90px; border-radius:12px; }
   .avatar-wrap::after{ border-radius:14px; }
-  .name{ font-size:1.85rem; }
-  .name.small{ font-size:1.25rem; }
+  /* push eyebrow + name clear of the avatar — home page only (has avatar) */
+  .masthead:not(.masthead--compact) .eyebrow{ padding-right:106px; }
+  .masthead:not(.masthead--compact) .name{ font-size:1.85rem; padding-right:106px; }
+  /* subpage name size (no avatar) */
+  .masthead--compact .name{ font-size:1.25rem; padding-right:0; }
+  /* tagline and below use full width naturally */
   .tagline{ font-size:.9rem; margin-top:10px; }
   .tabs{ flex-wrap:nowrap; gap:4px; width:auto; }
   .tabs a{ padding:6px 10px; font-size:.72rem; }
@@ -641,11 +644,12 @@ a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-rad
 
 /* small phones */
 @media (max-width:380px){
-  .page{ padding:20px 14px 36px; }
-  .masthead{ gap:12px; }
-  .avatar-wrap{ width:80px; height:80px; align-self:flex-start; }
+  .page{ padding:40px 14px 36px; }
+  .masthead{ gap:0; }
+  .avatar-wrap{ width:80px; height:80px; }
   .avatar{ width:80px; height:80px; border-radius:10px; }
-  .name{ font-size:1.65rem; }
+  .masthead:not(.masthead--compact) .eyebrow{ padding-right:94px; }
+  .masthead:not(.masthead--compact) .name{ font-size:1.65rem; padding-right:94px; }
   .tabs a{ padding:5px 8px; font-size:.68rem; }
 }
 
