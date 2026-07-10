@@ -1,9 +1,3 @@
-/* =========================================================
-   style.css  —  the look of your whole site lives here.
-   Change a value here and EVERY page updates.
-   The most common things to tweak are in :root just below.
-   ========================================================= */
-
 :root {
   --ink:   #1a1a1a;   /* main text color            */
   --muted: #666666;   /* secondary / lighter text   */
