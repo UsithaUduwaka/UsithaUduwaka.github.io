@@ -124,8 +124,8 @@ body::before{
 .avatar-wrap{
   flex:none;
   position:relative;
-  width:280px;
-  height:280px;
+  width:310px;
+  height:310px;
 }
 .avatar-wrap::after{
   content:"";
@@ -141,12 +141,12 @@ body::before{
   opacity:.9;
 }
 .avatar{
-  width:280px;
-  height:280px;
+  width:310px;
+  height:310px;
   object-fit:cover;
   border-radius:18px;
   display:block;
-  box-shadow:0 20px 50px -20px rgba(110,155,255,.5);
+  box-shadow:0 20px 50px -20px rgba(11, 101, 86, 0.5);
 }
 
 /* ---------- profile links ---------- */
